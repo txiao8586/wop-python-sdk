@@ -26,3 +26,7 @@ venv/
 # Mac
 .DS_Store
 .idea/
+
+# 黄金向量按钉版拉取生成（conftest），不落库
+tests/fixtures/crypto-vectors.json
+tests/fixtures/interop-cases.json
