@@ -89,8 +89,7 @@ def _discover() -> tuple[str, Callable[[], str]]:
     if explicit:
         return _file_discovery(Path(explicit), explicit=True)
 
-    env = os.environ.get(CONFIG_FILE_ENV, "").strip()
-    if env:
+    if env := os.environ.get(CONFIG_FILE_ENV, "").strip():
         path = Path(env)
         return _file_discovery(path, explicit=True)
 

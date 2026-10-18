@@ -45,9 +45,7 @@ def _duplicate_key_hook(pairs: List[Tuple[str, Any]]) -> Dict[str, Any]:
 
 
 def _strip_bom(text: str) -> str:
-    if text.startswith("\ufeff"):
-        return text[1:]
-    return text
+    return text[1:] if text.startswith("\ufeff") else text
 
 
 def parse_config_json(text: str) -> WopSdkConfig:
