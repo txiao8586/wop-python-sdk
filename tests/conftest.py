@@ -21,6 +21,9 @@ WOP_SPECS_SHA256 = {
 
 
 def _fetch_pinned_specs():
+    fixtures_dir = os.path.join(HERE, "fixtures")
+    os.makedirs(fixtures_dir, exist_ok=True)  # 副本出库后目录可能不存在
+
     for src, expected in WOP_SPECS_SHA256.items():
         url = f"https://raw.githubusercontent.com/wop-platform/wop-specs/{WOP_SPECS_REF}/{src}"
         with urllib.request.urlopen(url, timeout=30) as resp:
