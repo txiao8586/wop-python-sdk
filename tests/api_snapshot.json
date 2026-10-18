@@ -1750,10 +1750,10 @@
                 "parsed": [
                   {
                     "kind": "text",
-                    "value": "\u6784\u9020\u8bf7\u6c42\uff08F9\uff09\uff1a\u534f\u8bae\u5934\u7ec4\u88c5 \u2192 L2 \u53ef\u9009\u5c01\u88c5 \u2192 canonicalRequest \u2192 \u7b7e\u540d\u3002\n\ntimestamp_ms / nonce \u4e3a\u786e\u5b9a\u6027\u94a9\u5b50\uff08\u91cd\u653e/\u8054\u8c03\u7528\uff1b\u955c\u50cf Go WithTimestamp/\nWithNonce\uff09\u3002\u968f\u673a\u6d41\u6d88\u8d39\u987a\u5e8f\u5408\u540c\uff08wop-specs/interop/v1\uff09\uff1a\n[16B nonce \u6c60][CEK][12B IV][k\u2026]\u2014\u2014nonce \u6ce8\u5165\u65f6\u8df3\u8fc7 nonce \u6c60\u6bb5\u3002\nrequest_id \u4e3a\u5546\u6237\u8bf7\u6c42\u6807\u8bc6\uff08\u9644\u5f55 I\uff1ax-wop-request-id \u900f\u4f20\u5934\uff0c\u6052\u4e0d\u5165\u7b7e\uff1b\n\u987b\u4e3a\u4e0d\u542b\u4e2a\u4eba\u6570\u636e\u7684\u4e0d\u900f\u660e\u5173\u8054\u6807\u8bc6\uff09\uff1b\u672a\u4f20/\u7a7a\u767d \u2192 \u7f3a\u7701\u751f\u6210 UUID \u53bb\u8fde\u5b57\u7b26\n\uff08\u5934\u6052\u5b58\u5728\uff09\uff0c\u663e\u5f0f\u4f20\u503c trim \u540e\u539f\u503c\u4e0a\u884c\uff0c\u63a7\u5236\u5b57\u7b26\uff08trim \u524d\u626b\u63cf\uff09\u4e0e\u8d85\u957f\n\uff08trim \u540e UTF-8 \u5b57\u8282 > 128\uff09\u6784\u9020\u5373\u62d2\u3002"
+                    "value": "\u6784\u9020\u8bf7\u6c42\uff08F9\uff09\uff1a\u534f\u8bae\u5934\u7ec4\u88c5 \u2192 L2 \u53ef\u9009\u5c01\u88c5 \u2192 canonicalRequest \u2192 \u7b7e\u540d\u3002\n\ntimestamp_ms / nonce \u4e3a\u786e\u5b9a\u6027\u94a9\u5b50\uff08\u91cd\u653e/\u8054\u8c03\u7528\uff1b\u955c\u50cf Go WithTimestamp/\nWithNonce\uff09\u3002\u968f\u673a\u6d41\u6d88\u8d39\u987a\u5e8f\u5408\u540c\uff08wop-specs/interop/v1\uff09\uff1a\n[16B nonce \u6c60][CEK][12B IV][k\u2026]\u2014\u2014nonce \u6ce8\u5165\u65f6\u8df3\u8fc7 nonce \u6c60\u6bb5\u3002\nrequest_id \u4e3a\u5546\u6237\u8bf7\u6c42\u6807\u8bc6\uff08\u9644\u5f55 I\uff1ax-wop-request-id \u900f\u4f20\u5934\uff0c\u6052\u4e0d\u5165\u7b7e\uff1b\n\u987b\u4e3a\u4e0d\u542b\u4e2a\u4eba\u6570\u636e\u7684\u4e0d\u900f\u660e\u5173\u8054\u6807\u8bc6\uff09\uff1b\u672a\u4f20/\u7a7a\u767d \u2192 \u7f3a\u7701\u751f\u6210 UUID \u53bb\u8fde\u5b57\u7b26\n\uff08\u5934\u6052\u5b58\u5728\uff09\uff0c\u663e\u5f0f\u4f20\u503c trim \u540e\u539f\u503c\u4e0a\u884c\uff0c\u63a7\u5236\u5b57\u7b26\uff08trim \u524d\u626b\u63cf\uff09\u4e0e\u8d85\u957f\n\uff08trim \u540e UTF-8 \u5b57\u8282 > 128\uff09\u6784\u9020\u5373\u62d2\u3002extra_headers \u643a\u5e26\u8be5\u5934\u7b49\u4ef7\nrequest_id \u53c2\u6570\uff08\u540c\u89e3\u6790\u94fe\u3001\u6052\u4e0d\u5165\u7b7e\uff09\uff1b\u53cc\u6765\u6e90\u540c\u4f20\u6784\u9020\u5373\u62d2\uff08configuration\uff09\u3002"
                   }
                 ],
-                "value": "\u6784\u9020\u8bf7\u6c42\uff08F9\uff09\uff1a\u534f\u8bae\u5934\u7ec4\u88c5 \u2192 L2 \u53ef\u9009\u5c01\u88c5 \u2192 canonicalRequest \u2192 \u7b7e\u540d\u3002\n\ntimestamp_ms / nonce \u4e3a\u786e\u5b9a\u6027\u94a9\u5b50\uff08\u91cd\u653e/\u8054\u8c03\u7528\uff1b\u955c\u50cf Go WithTimestamp/\nWithNonce\uff09\u3002\u968f\u673a\u6d41\u6d88\u8d39\u987a\u5e8f\u5408\u540c\uff08wop-specs/interop/v1\uff09\uff1a\n[16B nonce \u6c60][CEK][12B IV][k\u2026]\u2014\u2014nonce \u6ce8\u5165\u65f6\u8df3\u8fc7 nonce \u6c60\u6bb5\u3002\nrequest_id \u4e3a\u5546\u6237\u8bf7\u6c42\u6807\u8bc6\uff08\u9644\u5f55 I\uff1ax-wop-request-id \u900f\u4f20\u5934\uff0c\u6052\u4e0d\u5165\u7b7e\uff1b\n\u987b\u4e3a\u4e0d\u542b\u4e2a\u4eba\u6570\u636e\u7684\u4e0d\u900f\u660e\u5173\u8054\u6807\u8bc6\uff09\uff1b\u672a\u4f20/\u7a7a\u767d \u2192 \u7f3a\u7701\u751f\u6210 UUID \u53bb\u8fde\u5b57\u7b26\n\uff08\u5934\u6052\u5b58\u5728\uff09\uff0c\u663e\u5f0f\u4f20\u503c trim \u540e\u539f\u503c\u4e0a\u884c\uff0c\u63a7\u5236\u5b57\u7b26\uff08trim \u524d\u626b\u63cf\uff09\u4e0e\u8d85\u957f\n\uff08trim \u540e UTF-8 \u5b57\u8282 > 128\uff09\u6784\u9020\u5373\u62d2\u3002"
+                "value": "\u6784\u9020\u8bf7\u6c42\uff08F9\uff09\uff1a\u534f\u8bae\u5934\u7ec4\u88c5 \u2192 L2 \u53ef\u9009\u5c01\u88c5 \u2192 canonicalRequest \u2192 \u7b7e\u540d\u3002\n\ntimestamp_ms / nonce \u4e3a\u786e\u5b9a\u6027\u94a9\u5b50\uff08\u91cd\u653e/\u8054\u8c03\u7528\uff1b\u955c\u50cf Go WithTimestamp/\nWithNonce\uff09\u3002\u968f\u673a\u6d41\u6d88\u8d39\u987a\u5e8f\u5408\u540c\uff08wop-specs/interop/v1\uff09\uff1a\n[16B nonce \u6c60][CEK][12B IV][k\u2026]\u2014\u2014nonce \u6ce8\u5165\u65f6\u8df3\u8fc7 nonce \u6c60\u6bb5\u3002\nrequest_id \u4e3a\u5546\u6237\u8bf7\u6c42\u6807\u8bc6\uff08\u9644\u5f55 I\uff1ax-wop-request-id \u900f\u4f20\u5934\uff0c\u6052\u4e0d\u5165\u7b7e\uff1b\n\u987b\u4e3a\u4e0d\u542b\u4e2a\u4eba\u6570\u636e\u7684\u4e0d\u900f\u660e\u5173\u8054\u6807\u8bc6\uff09\uff1b\u672a\u4f20/\u7a7a\u767d \u2192 \u7f3a\u7701\u751f\u6210 UUID \u53bb\u8fde\u5b57\u7b26\n\uff08\u5934\u6052\u5b58\u5728\uff09\uff0c\u663e\u5f0f\u4f20\u503c trim \u540e\u539f\u503c\u4e0a\u884c\uff0c\u63a7\u5236\u5b57\u7b26\uff08trim \u524d\u626b\u63cf\uff09\u4e0e\u8d85\u957f\n\uff08trim \u540e UTF-8 \u5b57\u8282 > 128\uff09\u6784\u9020\u5373\u62d2\u3002extra_headers \u643a\u5e26\u8be5\u5934\u7b49\u4ef7\nrequest_id \u53c2\u6570\uff08\u540c\u89e3\u6790\u94fe\u3001\u6052\u4e0d\u5165\u7b7e\uff09\uff1b\u53cc\u6765\u6e90\u540c\u4f20\u6784\u9020\u5373\u62d2\uff08configuration\uff09\u3002"
               },
               "is_class_private": false,
               "is_deprecated": false,
@@ -10213,6 +10213,23 @@
               "runtime": true,
               "target_path": "typing.Dict"
             },
+            "HttpClientSettings": {
+              "analysis": "static",
+              "inherited": false,
+              "is_class_private": false,
+              "is_deprecated": false,
+              "is_exported": false,
+              "is_imported": true,
+              "is_private": false,
+              "is_public": false,
+              "is_special": false,
+              "is_wildcard_exposed": true,
+              "kind": "alias",
+              "name": "HttpClientSettings",
+              "path": "wop_sdk.transports.urllib_transport.HttpClientSettings",
+              "runtime": true,
+              "target_path": "wop_sdk.config._models.HttpClientSettings"
+            },
             "HttpResponse": {
               "analysis": "static",
               "inherited": false,
@@ -10272,10 +10289,10 @@
                 "parsed": [
                   {
                     "kind": "text",
-                    "value": "urllib.request \u9002\u914d\u5668\uff1b4xx/5xx \u8fd4\u56de\u54cd\u5e94\u4f53\u800c\u975e\u629b\u5f02\u5e38\uff08\u534f\u8bae\u9519\u8bef\u4e5f\u5728 body \u91cc\uff09\u3002\n\n\u54cd\u5e94\u4f53\u6309\u5757\u6d41\u5f0f\u8bfb\u53d6\u5e76\u5728\u7d2f\u8ba1\u8d85 MAX_RESPONSE_BYTES\uff0811MB\uff09\u65f6\u5373\u523b\u4e2d\u65ad\u3002"
+                    "value": "urllib.request \u9002\u914d\u5668\uff1b4xx/5xx \u8fd4\u56de\u54cd\u5e94\u4f53\u800c\u975e\u629b\u5f02\u5e38\uff08\u534f\u8bae\u9519\u8bef\u4e5f\u5728 body \u91cc\uff09\u3002\n\n\u54cd\u5e94\u4f53\u6309\u5757\u6d41\u5f0f\u8bfb\u53d6\u5e76\u5728\u7d2f\u8ba1\u8d85 MAX_RESPONSE_BYTES\uff0811MB\uff09\u65f6\u5373\u523b\u4e2d\u65ad\u3002\ntimeout_ms\uff1a\u8bfb\u8d85\u65f6\uff08\u6beb\u79d2\uff09\uff0c\u5bf9\u9f50\u914d\u7f6e\u6a21\u578b httpClient.readTimeoutMs\uff1b\n\u7f3a\u7701\u53d6 HttpClientSettings.read_timeout\uff0830s\uff09\u2014\u2014urlopen \u7f3a\u7701\u65e0\u8d85\u65f6\u53ef\u65e0\u9650\u6302\u8d77\u3002"
                   }
                 ],
-                "value": "urllib.request \u9002\u914d\u5668\uff1b4xx/5xx \u8fd4\u56de\u54cd\u5e94\u4f53\u800c\u975e\u629b\u5f02\u5e38\uff08\u534f\u8bae\u9519\u8bef\u4e5f\u5728 body \u91cc\uff09\u3002\n\n\u54cd\u5e94\u4f53\u6309\u5757\u6d41\u5f0f\u8bfb\u53d6\u5e76\u5728\u7d2f\u8ba1\u8d85 MAX_RESPONSE_BYTES\uff0811MB\uff09\u65f6\u5373\u523b\u4e2d\u65ad\u3002"
+                "value": "urllib.request \u9002\u914d\u5668\uff1b4xx/5xx \u8fd4\u56de\u54cd\u5e94\u4f53\u800c\u975e\u629b\u5f02\u5e38\uff08\u534f\u8bae\u9519\u8bef\u4e5f\u5728 body \u91cc\uff09\u3002\n\n\u54cd\u5e94\u4f53\u6309\u5757\u6d41\u5f0f\u8bfb\u53d6\u5e76\u5728\u7d2f\u8ba1\u8d85 MAX_RESPONSE_BYTES\uff0811MB\uff09\u65f6\u5373\u523b\u4e2d\u65ad\u3002\ntimeout_ms\uff1a\u8bfb\u8d85\u65f6\uff08\u6beb\u79d2\uff09\uff0c\u5bf9\u9f50\u914d\u7f6e\u6a21\u578b httpClient.readTimeoutMs\uff1b\n\u7f3a\u7701\u53d6 HttpClientSettings.read_timeout\uff0830s\uff09\u2014\u2014urlopen \u7f3a\u7701\u65e0\u8d85\u65f6\u53ef\u65e0\u9650\u6302\u8d77\u3002"
               },
               "is_class_private": false,
               "is_deprecated": false,
@@ -10287,6 +10304,55 @@
               "is_wildcard_exposed": true,
               "kind": "class",
               "members": {
+                "__init__": {
+                  "analysis": "static",
+                  "decorators": [],
+                  "is_class_private": false,
+                  "is_deprecated": false,
+                  "is_exported": false,
+                  "is_imported": false,
+                  "is_private": false,
+                  "is_public": true,
+                  "is_special": true,
+                  "is_wildcard_exposed": false,
+                  "kind": "function",
+                  "name": "__init__",
+                  "parameters": [
+                    {
+                      "annotation": null,
+                      "default": null,
+                      "kind": "positional or keyword",
+                      "name": "self"
+                    },
+                    {
+                      "annotation": {
+                        "cls": "ExprName",
+                        "member": "__init__",
+                        "name": "int"
+                      },
+                      "default": {
+                        "cls": "ExprAttribute",
+                        "values": [
+                          {
+                            "cls": "ExprName",
+                            "member": null,
+                            "name": "HttpClientSettings"
+                          },
+                          {
+                            "cls": "ExprName",
+                            "member": null,
+                            "name": "read_timeout"
+                          }
+                        ]
+                      },
+                      "kind": "positional or keyword",
+                      "name": "timeout_ms"
+                    }
+                  ],
+                  "path": "wop_sdk.transports.urllib_transport.UrllibTransport.__init__",
+                  "returns": "None",
+                  "runtime": true
+                },
                 "send": {
                   "analysis": "static",
                   "decorators": [],
