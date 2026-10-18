@@ -13,7 +13,7 @@ L2 数字信封 / 验签解密）与可插拔 HTTP 适配层，使商户无需�
 - 协议真源：[crypto-strategy-spec.md](https://github.com/wop-platform/wop-specs/blob/main/crypto/crypto-strategy-spec.md)（v0.3-reviewed）+ [wop-sdk-spec.md](https://github.com/wop-platform/wop-specs/blob/main/docs/specs/wop-sdk-spec.md)（v1.0-ratified）
 - 向量真源：[crypto-vectors.json](https://github.com/wop-platform/wop-specs/blob/main/crypto/crypto-vectors.json)（本仓 fixture 为字节级副本，禁手改）
 - Python ≥ 3.9
-- 三套件全支持：`WOP-RSA3072-SHA256` / `WOP-RSA4096-SHA256` / `WOP-SM2-SM3`
+- 四套件全支持：`WOP-RSA2048-SHA256` / `WOP-RSA3072-SHA256` / `WOP-RSA4096-SHA256` / `WOP-SM2-SM3`
 - 密码依赖（唯一指定路径）：`cryptography`（RSA/AES）+ `gmssl ≥ 3.2.2`（SM2/SM3/SM4）
 - 主包零额外依赖；HTTP 适配器以 peer 依赖交付（`wop-python-sdk[httpx]` / `wop-python-sdk[requests]`）
 
@@ -56,6 +56,7 @@ else:
 
 | 套件 | 商户私钥 | 平台公钥 | 约束 |
 |------|----------|----------|------|
+| `WOP-RSA2048-SHA256` | PKCS#8 DER，Base64/PEM | X.509 SPKI DER，Base64/PEM | 密钥必须 2048 位 |
 | `WOP-RSA3072-SHA256` | PKCS#8 DER，Base64/PEM | X.509 SPKI DER，Base64/PEM | 密钥必须 3072 位 |
 | `WOP-RSA4096-SHA256` | 同上 | 同上 | 密钥必须 4096 位 |
 | `WOP-SM2-SM3` | `d` 标量 32 字节，Base64 | 未压缩点 `04‖X‖Y` 65 字节，Base64 | 点必须在 sm2p256v1 曲线上（I5） |
@@ -102,7 +103,7 @@ pip install -e '.[httpx]' coverage
 python3 -m pytest --cov=wop_sdk --cov-branch --cov-fail-under=98
 ```
 
-覆盖：RSA3072/4096 与 SM2 签名字节级断言、OAEP 包装/解包、AES-256-GCM 与 SM4-GCM
+覆盖：RSA2048/3072/4096 与 SM2 签名字节级断言、OAEP 包装/解包、AES-256-GCM 与 SM4-GCM
 密文字节级断言、SM3/SHA-256 摘要、DEK 载荷组装、digest 头全部格式规则；负向量含
 tamper / 跨族 / 63B、65B 签名 / 带 `=` 的 base64url / C1C2C3 旧国标顺序 /
 MGF1-SHA1 陷阱密文，全部必须拒绝。CI（3.9–3.14 × linux/macOS 矩阵）执行同一命令。

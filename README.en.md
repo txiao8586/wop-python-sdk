@@ -11,7 +11,7 @@ integrate securely without understanding canonicalRequest, suite derivation or t
 wire byte formats.
 
 - Python ≥ 3.9
-- All three suites supported: `WOP-RSA3072-SHA256` / `WOP-RSA4096-SHA256` / `WOP-SM2-SM3`
+- All four suites supported: `WOP-RSA2048-SHA256` / `WOP-RSA3072-SHA256` / `WOP-RSA4096-SHA256` / `WOP-SM2-SM3`
 - Crypto dependencies (the single designated path): `cryptography` (RSA/AES) +
   `gmssl ≥ 3.2.2` (SM2/SM3/SM4)
 - Zero extra runtime dependencies in the core; HTTP adapters ship as peer
@@ -59,6 +59,7 @@ Keys are passed as strings (PEM or single-line Base64) and parsed inside the SDK
 
 | Suite | Merchant private key | Platform public key | Constraint |
 |-------|----------------------|---------------------|------------|
+| `WOP-RSA2048-SHA256` | PKCS#8 DER, Base64/PEM | X.509 SPKI DER, Base64/PEM | must be 2048-bit |
 | `WOP-RSA3072-SHA256` | PKCS#8 DER, Base64/PEM | X.509 SPKI DER, Base64/PEM | must be 3072-bit |
 | `WOP-RSA4096-SHA256` | same | same | must be 4096-bit |
 | `WOP-SM2-SM3` | scalar `d`, 32 bytes, Base64 | uncompressed point `04‖X‖Y`, 65 bytes, Base64 | the point must lie on sm2p256v1 (I5) |
@@ -108,7 +109,7 @@ pip install -e '.[httpx]' coverage
 python3 -m pytest --cov=wop_sdk --cov-branch --cov-fail-under=98
 ```
 
-Covered: byte-exact RSA3072/4096 and SM2 signatures, OAEP wrap/unwrap, byte-exact
+Covered: byte-exact RSA2048/3072/4096 and SM2 signatures, OAEP wrap/unwrap, byte-exact
 AES-256-GCM and SM4-GCM ciphertexts, SM3/SHA-256 digests, DEK payload assembly, and
 every digest-header format rule. Negative vectors include tampering, cross-family
 material, 63-byte / 65-byte signatures, base64url with `=`, the legacy C1C2C3
