@@ -16,31 +16,11 @@ from wop_sdk.config._parser import parse_config_json
 from wop_sdk.config._validator import join_url, validate_api_path, validate_gateway_url
 from wop_sdk.errors import ConfigurationError, WopGatewayResponseError
 from wop_sdk.transports import HttpResponse
+from helpers import RSA_REQ, _valid_config_dict, _write_config
 
-RSA_REQ = "WOP-RSA3072-SHA256"
+
 PATH = "/gateway/order/create"
 
-
-def _valid_config_dict(vec_keys) -> dict:
-    return {
-        "appKey": "app_10012481831",
-        "suite": RSA_REQ,
-        "merchantPrivateKey": vec_keys["rsa3072"]["privatePkcs8B64"],
-        "platformPublicKey": vec_keys["rsa3072"]["publicSpkiB64"],
-        "serverRoot": "https://gw.example.com/gateway",
-        "backupServerRoots": ["https://gw-backup.example.com/gateway"],
-        "expiredSeconds": 1800,
-        "httpClient": {
-            "connectTimeout": 10000,
-            "readTimeout": 30000,
-            "maxRetryCount": 3,
-        },
-    }
-
-
-def _write_config(path: Path, payload: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
 
 
 @pytest.fixture

@@ -78,7 +78,7 @@ def _read_packaged(resource: str) -> str:
     resource_name = resource.split("/", 1)[-1] if "/" in resource else resource
     try:
         data = resources.files(package).joinpath(resource_name).read_text(encoding="utf-8")
-    except (FileNotFoundError, OSError, TypeError) as exc:
+    except (OSError, TypeError) as exc:
         raise ConfigurationError(f"打包资源不存在: {resource}") from exc
     return data
 
@@ -87,11 +87,9 @@ def _discover() -> tuple[str, Callable[[], str]]:
     """§4.2 六来源发现顺序。"""
     explicit = os.environ.get(CONFIG_FILE_OVERRIDE_ENV, "").strip()
     if explicit:
-        path = Path(explicit)
-        return _file_discovery(path, explicit=True)
+        return _file_discovery(Path(explicit), explicit=True)
 
-    env = os.environ.get(CONFIG_FILE_ENV, "").strip()
-    if env:
+    if env := os.environ.get(CONFIG_FILE_ENV, "").strip():
         path = Path(env)
         return _file_discovery(path, explicit=True)
 
@@ -108,12 +106,12 @@ def _discover() -> tuple[str, Callable[[], str]]:
     packaged = PACKAGED_CONFIG.rsplit("/", 1)[-1]
     try:
         resources.files("wop_sdk.config").joinpath(packaged).read_bytes()
-    except (FileNotFoundError, OSError, TypeError):
+    except (OSError, TypeError) as exc:
         expanded = ", ".join(str(item) for item in candidates)
         raise ConfigurationError(
             "未找到可读配置文件，已尝试: "
             f"WOP_SDK_CONFIG_FILE, {CONFIG_FILE_ENV}, {expanded}, 打包资源 {PACKAGED_CONFIG}"
-        )
+        ) from exc
     cache_key = f"pkg:{PACKAGED_CONFIG}"
     return cache_key, lambda: _read_packaged(PACKAGED_CONFIG)
 

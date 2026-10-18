@@ -64,7 +64,7 @@ class WopSdkConfigBuilder:
         self._merchant_private_key: Optional[str] = None
         self._platform_public_key: Optional[str] = None
         self._server_root: Optional[str] = None
-        self._backup_server_roots: Tuple[str, ...] = tuple()
+        self._backup_server_roots: Tuple[str, ...] = ()
         self._expired_seconds: int = DEFAULT_EXPIRED_SECONDS
         self._http_client: HttpClientSettings = HttpClientSettings()
         self._transport: Optional["Transport"] = None
