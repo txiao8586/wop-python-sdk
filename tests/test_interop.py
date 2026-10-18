@@ -38,8 +38,10 @@ from wop_sdk.errors import (
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIXTURE_PATH = os.path.join(HERE, "fixtures", "interop-cases.json")
 
-# 真源 wop-specs/interop/v1/interop-cases.json 的 sha256（字节副本哨兵）
-EXPECTED_SHA256 = "9a51486d8d00df45b60001515acce7eb89b731876233b9e39cd8b141b1af1d42"
+# 真源 wop-specs/interop/v1/interop-cases.json 的 sha256（字节副本哨兵）。
+# 来源：本仓 fixture 与真源实测一致（shasum -a 256 双侧均为该值）；PR 曾误改为
+# 无来源的 9a51486d…，fixture 本身未动，故回滚到实测真源值。
+EXPECTED_SHA256 = "c920ca1a93ccb3899a659f59fed6ec4652cf9e1b3b58bbdac23c45ac3ed2353e"
 EXPECTED_FORMAT = "wop-interop-1"
 
 with open(FIXTURE_PATH, "r", encoding="utf-8") as _f:

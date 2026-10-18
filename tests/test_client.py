@@ -40,6 +40,19 @@ def rsa_client(vec_keys):
 
 
 @pytest.fixture(scope="module")
+def rsa2048_client(vec_keys):
+    return WopClient(
+        WopConfig(
+            app_key="app_10012481831",
+            suite="WOP-RSA2048-SHA256",
+            merchant_private_key=vec_keys["rsa2048"]["privatePkcs8B64"],
+            platform_public_key=vec_keys["rsa2048"]["publicSpkiB64"],
+        ),
+        csprng=lambda n: b"\x5a" * n,
+    )
+
+
+@pytest.fixture(scope="module")
 def sm_client(vec_keys):
     return WopClient(
         WopConfig(
@@ -346,6 +359,13 @@ class TestVerifyResponseL2:
         assert r.ok, r.reason
         assert r.plaintext == plain
 
+    def test_l2_roundtrip_rsa2048(self, rsa2048_client):  # RSA2048 L2 套件全链路
+        plain = b'{"secret":"rsa2048"}'
+        headers, wire = platform_l2_response(rsa2048_client, PATH, plain)
+        r = rsa2048_client.verify_response(headers, wire, PATH)
+        assert r.ok, r.reason
+        assert r.plaintext == plain
+
     def test_dek_blurred_before_consistency_check_order(self, rsa_client):  # spec:F6 顺序③
         """坏 dek + 有效签名（重签）→ 验签过、digest 过 → DEK 解包模糊拒绝。"""
         headers, wire = platform_l2_response(rsa_client, PATH, b"m", encrypt_override="L2;dek=" + "A" * 512)
@@ -430,3 +450,36 @@ class TestRequestIdPassthrough:  # spec:wop-sdk-spec 附录 I（x-wop-request-id
         monkeypatch.setattr(client_mod, "request_id_generator", lambda: "gen-anchor-001")
         draft = rsa_client.build_request("POST", PATH, b"msg", level="L2")
         assert draft.headers["x-wop-request-id"] == "gen-anchor-001"
+
+    def test_extra_headers_request_id_never_signed_canary(self, rsa_client):
+        # 金丝雀（PR 评审修复项回归锚）：extra_headers 携带 x-wop-request-id 时
+        # 恒不入签——①signedHeaders 清单不含该头；②签名字节与不传时完全一致
+        # （RSA 确定性签名 + 同 timestamp/nonce）；③线上头值 == 显式传值（trim 后）
+        common = dict(timestamp_ms=1774340000000, nonce="n1")
+        plain = rsa_client.build_request("GET", "/q", **common)
+        with_hdr = rsa_client.build_request(
+            "GET", "/q", extra_headers={"x-wop-request-id": " rid-hdr-001 "}, **common
+        )
+        signed_names = with_hdr.headers["x-wop-sign"].split(" ", 1)[1].split("/")[2].split(";")
+        assert "x-wop-request-id" not in signed_names
+        assert with_hdr.headers["x-wop-sign"] == plain.headers["x-wop-sign"]
+        assert with_hdr.headers["x-wop-request-id"] == "rid-hdr-001"
+
+    def test_extra_headers_request_id_conflict_rejected(self, rsa_client):
+        # 双来源同传（显式 request_id 参数 + extra_headers 头）= 歧义，构造即拒（钉定实现）
+        with pytest.raises(ConfigurationError, match="x-wop-request-id"):
+            rsa_client.build_request(
+                "GET", "/q", request_id="r1", extra_headers={"X-Wop-Request-Id": "r2"}
+            )
+
+    @pytest.mark.parametrize("bad", ["a\nb", "a\x7fb", "x" * 129, "标" * 43])
+    def test_extra_headers_request_id_same_validation_chain(self, rsa_client, bad):
+        # extra_headers 值并入 request_id 同一解析链：控制字符/UTF-8 长度校验同口径拒
+        with pytest.raises(ConfigurationError):
+            rsa_client.build_request("GET", "/q", extra_headers={"x-wop-request-id": bad})
+
+    def test_extra_headers_request_id_blank_generates_default(self, rsa_client):
+        import re
+
+        d = rsa_client.build_request("GET", "/q", extra_headers={"x-wop-request-id": "  "})
+        assert re.fullmatch(r"[0-9a-f]{32}", d.headers["x-wop-request-id"])  # trim 后空 → 缺省生成

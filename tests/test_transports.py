@@ -97,6 +97,17 @@ class TestUrllibTransport:
         assert req.get_header("X-wop-appkey") == "ak"
         assert req.data == b"b"
 
+    def test_timeout_wired_to_urlopen(self):
+        # 评审修复项：urlopen 无 timeout 可无限挂起——显式毫秒入参换算秒传 urlopen
+        resp_obj = _ok_response()
+        with mock.patch("urllib.request.urlopen", return_value=resp_obj) as urlopen:
+            UrllibTransport(timeout_ms=2500).send("GET", "https://gw/p", {}, None)
+        assert urlopen.call_args.kwargs["timeout"] == 2.5
+        # 未配置时缺省 = 配置模型 readTimeoutMs 默认值（30s）
+        from wop_sdk.config import HttpClientSettings
+
+        assert UrllibTransport()._timeout_s == HttpClientSettings.read_timeout / 1000
+
 
 class _UrllibLimit:
     """urllib 上限边界：sized（有限总量）/ endless（无限流）两种 read 侧写。"""

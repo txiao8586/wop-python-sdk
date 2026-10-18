@@ -226,6 +226,14 @@ class TestDefaultClient:
         client = WopClient.from_config(cfg)
         assert client._sdk_config is cfg
 
+    def test_from_config_wires_read_timeout_to_urllib_transport(self, valid_sdk_config):
+        # 评审修复项：默认 urllib 传输接线 http_client.read_timeout（毫秒→秒）
+        from wop_sdk.transports import UrllibTransport
+
+        client = WopClient.from_config(valid_sdk_config)
+        assert isinstance(client._transport, UrllibTransport)
+        assert client._transport._timeout_s == valid_sdk_config.http_client.read_timeout / 1000
+
     def test_default_client_singleton(self, valid_sdk_config, monkeypatch):
         created = []
 

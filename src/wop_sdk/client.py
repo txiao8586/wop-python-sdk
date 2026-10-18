@@ -183,8 +183,16 @@ class WopClient:
     def from_config(cls, sdk_config: "WopSdkConfig", csprng: Csprng = os.urandom) -> "WopClient":
         """显式配置构造（不进默认实例缓存，K11）。"""
         from .transport_discovery import discover_transport
+        from .transports import UrllibTransport
 
-        transport = sdk_config.transport or discover_transport()
+        if sdk_config.transport is not None:
+            transport = sdk_config.transport
+        else:
+            transport = discover_transport()
+            if isinstance(transport, UrllibTransport):
+                # 默认 urllib 传输接线 http_client.read_timeout（毫秒），
+                # 未配置时 HttpClientSettings 默认 30s；显式注入的 transport 不改写
+                transport = UrllibTransport(timeout_ms=sdk_config.http_client.read_timeout)
         core = WopConfig(
             app_key=sdk_config.app_key,
             suite=sdk_config.suite,
@@ -234,12 +242,29 @@ class WopClient:
         request_id 为商户请求标识（附录 I：x-wop-request-id 透传头，恒不入签；
         须为不含个人数据的不透明关联标识）；未传/空白 → 缺省生成 UUID 去连字符
         （头恒存在），显式传值 trim 后原值上行，控制字符（trim 前扫描）与超长
-        （trim 后 UTF-8 字节 > 128）构造即拒。
+        （trim 后 UTF-8 字节 > 128）构造即拒。extra_headers 携带该头等价
+        request_id 参数（同解析链、恒不入签）；双来源同传构造即拒（configuration）。
         """
         if level not in _LEVELS:
             raise ConfigurationError("level 必须为 L0 或 L2，实际 %r" % level)
-        # 附录 I/I2：requestId 构造即校验（fail-fast，不延迟到发送前）
-        resolved_request_id = resolve_request_id(request_id)
+        # 附录 I/I2：requestId 构造即校验（fail-fast，不延迟到发送前）。
+        # extra_headers 的 x-wop-request-id 等价显式参数（同 trim/控制字符/长度链）；
+        # 双来源同传 = 歧义，构造即拒（K12 fail-fast 同款）
+        header_request_id = next(
+            (
+                str(value)
+                for name, value in (extra_headers or {}).items()
+                if name.strip().lower() == _HEADER_REQUEST_ID
+            ),
+            None,
+        )
+        if header_request_id is not None and request_id is not None:
+            raise ConfigurationError(
+                "request_id 参数与 extra_headers['x-wop-request-id'] 同时显式提供，请仅保留一处"
+            )
+        resolved_request_id = resolve_request_id(
+            request_id if request_id is not None else header_request_id
+        )
         safe_method = method.strip().upper()
         # spec:interop-v1 随机流消费顺序：nonce 池最前，先于 seal_l2 的 CEK/IV
         if not nonce:
@@ -267,6 +292,10 @@ class WopClient:
         app_headers: Dict[str, str] = {}
         for name, value in (extra_headers or {}).items():
             low = name.strip().lower()
+            if low == _HEADER_REQUEST_ID:
+                # 恒不入签（附录 I）：值已在解析链消费；若并入 headers 会被签名后
+                # 覆盖 → 签名集合含旧值、线上是新值，网关验签必败且 SDK 零报错
+                continue
             if low.startswith("x-wop-"):
                 headers[low] = str(value).strip()
             else:
