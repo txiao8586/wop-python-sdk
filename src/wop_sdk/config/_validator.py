@@ -93,7 +93,7 @@ def validate_gateway_url(value: str, field_name: str) -> str:
 
 def validate_api_path(path: str) -> None:
     """§7.7 API path 语法校验。"""
-    if path is None or path == "":
+    if path is None or not path:
         raise ConfigurationError("请求路径为空")
     if not path.startswith("/"):
         raise ConfigurationError(f"path 须以 / 开头: {path}")

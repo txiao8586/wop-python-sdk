@@ -17,7 +17,7 @@ from wop_sdk.config._models import WopSdkConfigBuilder
 from wop_sdk.config._parser import parse_config_json
 from wop_sdk.config._validator import validate_api_path, validate_gateway_url
 from wop_sdk.errors import ConfigurationError
-from test_config import _valid_config_dict, _write_config
+from helpers import _valid_config_dict, _write_config
 
 
 def _raw(vec_keys, **overrides):

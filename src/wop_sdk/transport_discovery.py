@@ -17,8 +17,7 @@ def discover_transport() -> Transport:
     available = _available_transports()
     if not available:
         raise ConfigurationError("未找到可用 HTTP 传输，请确认 wop-python-sdk 安装完整")
-    explicit = os.environ.get(_TRANSPORT_ENV, "").strip().lower()
-    if explicit:
+    if explicit := os.environ.get(_TRANSPORT_ENV, "").strip().lower():
         transport = available.get(explicit)
         if transport is None:
             names = ", ".join(sorted(available))
@@ -47,7 +46,5 @@ def _available_transports() -> Dict[str, type]:
         from .transports.requests_transport import RequestsTransport
 
         found["requests"] = RequestsTransport
-    # P0：仅 urllib 时不视为「多个」——过滤后若显式 env 未设且仅 urllib，直接返回
-    if set(found.keys()) == {"urllib"}:
-        return found
+    # P0：仅 urllib 时不视为「多个」——显式 env 未设且仅 urllib 时直接返回
     return found

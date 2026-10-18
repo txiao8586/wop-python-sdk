@@ -73,11 +73,7 @@ def parse_config_json(text: str) -> WopSdkConfig:
 
 
 def _bind_root(root: Mapping[str, Any]) -> WopSdkConfig:
-    unknown = set(root.keys()) - _ALLOWED_TOP_LEVEL
-    if unknown:
-        # 未知字段忽略：仅处理已知键
-        pass
-
+    # 未知字段忽略：仅处理已知键
     app_key = _require_string(root.get("appKey"), "appKey", required=False)
     suite = _require_string(root.get("suite"), "suite", required=False)
     merchant_private_key = _require_string(
