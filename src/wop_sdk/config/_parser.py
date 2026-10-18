@@ -144,7 +144,8 @@ def _read_string_array(value: Any) -> List[str]:
 def _read_expired_seconds(value: Any) -> int:
     if value is None:
         return DEFAULT_EXPIRED_SECONDS
-    if isinstance(value, bool) or not isinstance(value, int):
+    # 允许整 float（与 _parse_int_field 同语义），细分校验在下方 float 分支
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ConfigurationError(f"配置字段 expiredSeconds 类型非法: {value!r}")
     if isinstance(value, float):
         if not math.isfinite(value) or value != int(value):
