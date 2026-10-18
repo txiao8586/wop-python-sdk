@@ -91,7 +91,8 @@ def test_parse_config_field_branches(vec_keys, field, bad, expect):
 ])
 def test_parse_http_client_scalars(vec_keys, field, sub, bad):
     text = _mutate(vec_keys, **{field: {sub: bad}})
-    ok = isinstance(bad, (int, float)) and not isinstance(bad, bool) and bad in (0, 1.0)
+    # readTimeout=0 拒绝（须为正，与 dotnet 口径一致；仅 maxRetryCount 允许 0=禁用重试 §7.3）
+    ok = bad == 1.0 or (sub == "maxRetryCount" and bad == 0 and not isinstance(bad, bool))
     if ok:
         parse_config_json(text)
     else:
