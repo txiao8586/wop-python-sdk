@@ -472,6 +472,19 @@ class TestRequestIdPassthrough:  # spec:wop-sdk-spec 附录 I（x-wop-request-id
                 "GET", "/q", request_id="r1", extra_headers={"X-Wop-Request-Id": "r2"}
             )
 
+    def test_extra_headers_request_id_case_variants_first_wins(self, rsa_client):
+        # 同名头多大小写变体:首值生效(插入序),其余静默丢弃——与双来源拒同属
+        # 消歧语义,显式钉定防漂移(重审 2026-10-18)
+        d = rsa_client.build_request(
+            "GET",
+            "/q",
+            extra_headers={
+                "X-Wop-Request-Id": "rid-upper-001",
+                "x-wop-request-id": "rid-lower-002",
+            },
+        )
+        assert d.headers["x-wop-request-id"] == "rid-upper-001"
+
     @pytest.mark.parametrize("bad", ["a\nb", "a\x7fb", "x" * 129, "标" * 43])
     def test_extra_headers_request_id_same_validation_chain(self, rsa_client, bad):
         # extra_headers 值并入 request_id 同一解析链：控制字符/UTF-8 长度校验同口径拒
