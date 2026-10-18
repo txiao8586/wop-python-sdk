@@ -54,6 +54,16 @@ class TestRsaKeys:
         pem = _wrap_pem(rsa3072["privatePkcs8B64"], "PRIVATE KEY")
         assert load_rsa_private_key(pem, expected_bits=3072).key_size == 3072
 
+    def test_private_rsa2048_vector_bits_match(self, vec_keys):
+        # RSA2048 套件位宽校验路径正向：向量 2048 钥按 expected_bits=2048 接受
+        key = load_rsa_private_key(vec_keys["rsa2048"]["privatePkcs8B64"], expected_bits=2048)
+        assert key.key_size == 2048
+
+    def test_private_3072_key_rejected_for_rsa2048_suite(self, vec_keys):
+        # 位宽校验路径反向（configuration 类）：配 3072 钥给 2048 套件 → 构造即拒
+        with pytest.raises(KeyMaterialError):
+            load_rsa_private_key(vec_keys["rsa3072"]["privatePkcs8B64"], expected_bits=2048)
+
     def test_bits_mismatch_rejected(self, rsa2048_priv):
         with pytest.raises(KeyMaterialError):
             load_rsa_private_key(rsa2048_priv, expected_bits=3072)

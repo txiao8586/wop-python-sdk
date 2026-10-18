@@ -40,6 +40,19 @@ def rsa_client(vec_keys):
 
 
 @pytest.fixture(scope="module")
+def rsa2048_client(vec_keys):
+    return WopClient(
+        WopConfig(
+            app_key="app_10012481831",
+            suite="WOP-RSA2048-SHA256",
+            merchant_private_key=vec_keys["rsa2048"]["privatePkcs8B64"],
+            platform_public_key=vec_keys["rsa2048"]["publicSpkiB64"],
+        ),
+        csprng=lambda n: b"\x5a" * n,
+    )
+
+
+@pytest.fixture(scope="module")
 def sm_client(vec_keys):
     return WopClient(
         WopConfig(
@@ -130,10 +143,14 @@ class TestBuildRequestL0:
         draft = rsa_client.build_request("POST", PATH, b"x", expired_seconds=60)
         assert draft.headers["x-wop-sign"].split(" ")[1].split("/")[:2] == ["v1", "60"]
 
-    def test_deterministic_replay(self, rsa_client):  # spec:§2 幂等
+    def test_deterministic_replay(self, rsa_client, monkeypatch):  # spec:§2 幂等
+        # 附录 I/I3：缺省 requestId 属 CSPRNG 豁免项；注入固定生成器后全头可重放
+        import wop_sdk.client as client_mod
+        monkeypatch.setattr(client_mod, "request_id_generator", lambda: "fixedreq" + "0" * 26)
         d1 = rsa_client.build_request("POST", PATH, b"same")
         d2 = rsa_client.build_request("POST", PATH, b"same")
         assert d1.headers == d2.headers and d1.wire_body == d2.wire_body
+        assert d1.headers["x-wop-request-id"] == "fixedreq" + "0" * 26
 
     def test_extra_headers_override(self, rsa_client):
         draft = rsa_client.build_request(
@@ -342,6 +359,13 @@ class TestVerifyResponseL2:
         assert r.ok, r.reason
         assert r.plaintext == plain
 
+    def test_l2_roundtrip_rsa2048(self, rsa2048_client):  # RSA2048 L2 套件全链路
+        plain = b'{"secret":"rsa2048"}'
+        headers, wire = platform_l2_response(rsa2048_client, PATH, plain)
+        r = rsa2048_client.verify_response(headers, wire, PATH)
+        assert r.ok, r.reason
+        assert r.plaintext == plain
+
     def test_dek_blurred_before_consistency_check_order(self, rsa_client):  # spec:F6 顺序③
         """坏 dek + 有效签名（重签）→ 验签过、digest 过 → DEK 解包模糊拒绝。"""
         headers, wire = platform_l2_response(rsa_client, PATH, b"m", encrypt_override="L2;dek=" + "A" * 512)
@@ -366,3 +390,109 @@ class TestVerifyResponseL2:
         bad[-3] ^= 0x01
         r = sm_client.verify_response(headers, bytes(bad), PATH)
         assert not r.ok and r.reason == "内容摘要不匹配"
+
+
+class TestRequestIdPassthrough:  # spec:wop-sdk-spec 附录 I（x-wop-request-id）
+    """附录 I 三条对齐重点：I1 恒不入签、I2 值校验（控制字符/UTF-8 字节长）、
+    I3 缺省生成（UUID 去连字符小写 32 hex）与日志义务。"""
+
+    def test_explicit_value_trimmed_upstream(self, rsa_client):
+        draft = rsa_client.build_request("GET", "/q", request_id="  req-001  ")
+        assert draft.headers["x-wop-request-id"] == "req-001"  # trim 后原值，除 trim 外禁止改写
+
+    def test_never_signed_and_sign_bytes_unchanged(self, rsa_client):  # spec:附录 I/I1
+        with_id = rsa_client.build_request("GET", "/q", request_id="req-001")
+        without = rsa_client.build_request("GET", "/q")
+        signed_names = with_id.headers["x-wop-sign"].split("/")[2].split(";")
+        assert "x-wop-request-id" not in signed_names
+        assert with_id.headers["x-wop-sign"] == without.headers["x-wop-sign"]
+
+    def test_default_generated_uuid32_and_fresh_per_call(self, rsa_client):  # spec:附录 I/I3
+        import re
+
+        a = rsa_client.build_request("GET", "/q")
+        b = rsa_client.build_request("GET", "/q")
+        assert re.fullmatch(r"[0-9a-f]{32}", a.headers["x-wop-request-id"])
+        assert re.fullmatch(r"[0-9a-f]{32}", b.headers["x-wop-request-id"])
+        assert a.headers["x-wop-request-id"] != b.headers["x-wop-request-id"]
+        # 空格 trim 后为空 → 视为未设置，走缺省生成（\t/\n 属控制字符，trim 前扫描即拒）
+        blank = rsa_client.build_request("GET", "/q", request_id="   ")
+        assert re.fullmatch(r"[0-9a-f]{32}", blank.headers["x-wop-request-id"])
+
+    @pytest.mark.parametrize(
+        "bad",
+        ["a\nb", "a\rb", "a\x00b", "a\x7fb", "a\tb", "\nlead", "trail\r", " \t ", "\x00", "\x7f"],
+    )
+    def test_control_chars_rejected_pre_trim(self, rsa_client, bad):  # spec:附录 I/I2
+        with pytest.raises(ConfigurationError, match="控制字符"):
+            rsa_client.build_request("GET", "/q", request_id=bad)
+
+    def test_length_measured_in_utf8_bytes(self, rsa_client):  # spec:附录 I/I2
+        # 128 ASCII 字节 OK；129 拒；42 中文 = 126 字节 OK；43 = 129 字节拒
+        ok = rsa_client.build_request("GET", "/q", request_id="x" * 128)
+        assert ok.headers["x-wop-request-id"] == "x" * 128
+        with pytest.raises(ConfigurationError, match="UTF-8 字节长度不能超过 128（实际 129）"):
+            rsa_client.build_request("GET", "/q", request_id="x" * 129)
+        ok_cjk = rsa_client.build_request("GET", "/q", request_id="标" * 42)
+        assert ok_cjk.headers["x-wop-request-id"] == "标" * 42
+        with pytest.raises(ConfigurationError, match="UTF-8 字节长度不能超过 128（实际 129）"):
+            rsa_client.build_request("GET", "/q", request_id="标" * 43)
+
+    def test_outbound_log_contains_final_value(self, rsa_client, caplog):  # spec:附录 I/I3 日志义务
+        import logging
+
+        with caplog.at_level(logging.INFO, logger="wop_sdk.outbound"):
+            rsa_client.build_request("GET", "/q", request_id="logreq001")
+        lines = [r.getMessage() for r in caplog.records]
+        assert any("x-wop-request-id=logreq001" in m and "GET /q" in m for m in lines)
+
+    def test_injected_generator_bypasses_csprng_stream(self, rsa_client, monkeypatch):  # spec:I3 注入锚
+        monkeypatch.setattr(client_mod, "request_id_generator", lambda: "gen-anchor-001")
+        draft = rsa_client.build_request("POST", PATH, b"msg", level="L2")
+        assert draft.headers["x-wop-request-id"] == "gen-anchor-001"
+
+    def test_extra_headers_request_id_never_signed_canary(self, rsa_client):
+        # 金丝雀（PR 评审修复项回归锚）：extra_headers 携带 x-wop-request-id 时
+        # 恒不入签——①signedHeaders 清单不含该头；②签名字节与不传时完全一致
+        # （RSA 确定性签名 + 同 timestamp/nonce）；③线上头值 == 显式传值（trim 后）
+        common = dict(timestamp_ms=1774340000000, nonce="n1")
+        plain = rsa_client.build_request("GET", "/q", **common)
+        with_hdr = rsa_client.build_request(
+            "GET", "/q", extra_headers={"x-wop-request-id": " rid-hdr-001 "}, **common
+        )
+        signed_names = with_hdr.headers["x-wop-sign"].split(" ", 1)[1].split("/")[2].split(";")
+        assert "x-wop-request-id" not in signed_names
+        assert with_hdr.headers["x-wop-sign"] == plain.headers["x-wop-sign"]
+        assert with_hdr.headers["x-wop-request-id"] == "rid-hdr-001"
+
+    def test_extra_headers_request_id_conflict_rejected(self, rsa_client):
+        # 双来源同传（显式 request_id 参数 + extra_headers 头）= 歧义，构造即拒（钉定实现）
+        with pytest.raises(ConfigurationError, match="x-wop-request-id"):
+            rsa_client.build_request(
+                "GET", "/q", request_id="r1", extra_headers={"X-Wop-Request-Id": "r2"}
+            )
+
+    def test_extra_headers_request_id_case_variants_first_wins(self, rsa_client):
+        # 同名头多大小写变体:首值生效(插入序),其余静默丢弃——与双来源拒同属
+        # 消歧语义,显式钉定防漂移(重审 2026-10-18)
+        d = rsa_client.build_request(
+            "GET",
+            "/q",
+            extra_headers={
+                "X-Wop-Request-Id": "rid-upper-001",
+                "x-wop-request-id": "rid-lower-002",
+            },
+        )
+        assert d.headers["x-wop-request-id"] == "rid-upper-001"
+
+    @pytest.mark.parametrize("bad", ["a\nb", "a\x7fb", "x" * 129, "标" * 43])
+    def test_extra_headers_request_id_same_validation_chain(self, rsa_client, bad):
+        # extra_headers 值并入 request_id 同一解析链：控制字符/UTF-8 长度校验同口径拒
+        with pytest.raises(ConfigurationError):
+            rsa_client.build_request("GET", "/q", extra_headers={"x-wop-request-id": bad})
+
+    def test_extra_headers_request_id_blank_generates_default(self, rsa_client):
+        import re
+
+        d = rsa_client.build_request("GET", "/q", extra_headers={"x-wop-request-id": "  "})
+        assert re.fullmatch(r"[0-9a-f]{32}", d.headers["x-wop-request-id"])  # trim 后空 → 缺省生成

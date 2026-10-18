@@ -16,6 +16,7 @@ from wop_sdk.suites import parse_suite
 
 RSA3072 = parse_suite("WOP-RSA3072-SHA256")
 RSA4096 = parse_suite("WOP-RSA4096-SHA256")
+RSA2048 = parse_suite("WOP-RSA2048-SHA256")
 SM2 = parse_suite("WOP-SM2-SM3")
 
 MSG = "WOP 跨语言测试向量 2026-08-28 — The quick brown fox jumps over the lazy dog."
@@ -60,6 +61,15 @@ class TestRsaSignVectors:
         sig = sign(RSA4096, priv, MSG_B)
         assert b64url_encode(sig) == v["expectedSigB64u"]
         assert len(sig) == v["sigLenBytes"]
+
+    def test_rsa2048_sign_byte_exact(self, vectors, vec_keys):  # spec:A1 rsa2048-sign
+        v = next(x for x in vectors["signature"] if x["id"] == "rsa2048-sign")
+        priv = load_rsa_private_key(vec_keys["rsa2048"]["privatePkcs8B64"], 2048)
+        sig = sign(RSA2048, priv, MSG_B)
+        assert b64url_encode(sig) == v["expectedSigB64u"]
+        assert len(sig) == v["sigLenBytes"]
+        assert len(v["expectedSigB64u"]) == v["b64uLen"]
+        verify(RSA2048, load_rsa_public_key(vec_keys["rsa2048"]["publicSpkiB64"], 2048), MSG_B, sig)
 
     def test_sign_deterministic_pkcs1v15(self, k3072):
         assert sign(RSA3072, k3072["priv"], MSG_B) == sign(RSA3072, k3072["priv"], MSG_B)

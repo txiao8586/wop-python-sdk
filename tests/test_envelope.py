@@ -22,6 +22,7 @@ from wop_sdk.sm2crypto import Sm2Ops
 from wop_sdk.suites import parse_suite
 
 RSA3072 = parse_suite("WOP-RSA3072-SHA256")
+RSA2048 = parse_suite("WOP-RSA2048-SHA256")
 SM2 = parse_suite("WOP-SM2-SM3")
 
 PLAINTEXT = "WOP 跨语言测试向量 2026-08-28 — The quick brown fox jumps over the lazy dog."
@@ -125,6 +126,12 @@ class TestKeyEncryptVectors:
         v = _vec(vectors, "keyEncrypt", "oaep4096-unwrap")
         priv = load_rsa_private_key(vec_keys["rsa4096"]["privatePkcs8B64"], 4096)
         out = unwrap_dek(parse_suite("WOP-RSA4096-SHA256"), priv, b64url_decode(v["cipherB64u"]))
+        assert out.decode() == v["expectedPlaintext"]
+
+    def test_oaep2048_unwrap(self, vectors, vec_keys):  # spec:A1 oaep2048-unwrap
+        v = _vec(vectors, "keyEncrypt", "oaep2048-unwrap")
+        priv = load_rsa_private_key(vec_keys["rsa2048"]["privatePkcs8B64"], 2048)
+        out = unwrap_dek(RSA2048, priv, b64url_decode(v["cipherB64u"]))
         assert out.decode() == v["expectedPlaintext"]
 
     def test_mgf1_sha1_trap_rejected(self, vectors, rsa_pair):  # spec:A2 oaep3072-mgf1sha1-trap（F2 钉子）
