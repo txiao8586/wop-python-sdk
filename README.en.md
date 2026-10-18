@@ -30,7 +30,7 @@ from wop_sdk.transports import UrllibTransport, send_draft
 
 client = WopClient(WopConfig(
     app_key="app_10012481831",
-    suite="WOP-RSA3072-SHA256",            # or WOP-RSA4096-SHA256 / WOP-SM2-SM3
+    suite="WOP-RSA2048-SHA256",            # or WOP-RSA4096-SHA256 / WOP-SM2-SM3
     merchant_private_key=MERCHANT_PRIV_PEM,  # merchant private key (PEM or single-line Base64)
     platform_public_key=PLATFORM_PUB_PEM,    # platform public key (PEM or single-line Base64)
     gateway_base_url="https://wop.example.com",

@@ -30,7 +30,7 @@ from wop_sdk.transports import UrllibTransport, send_draft
 
 client = WopClient(WopConfig(
     app_key="app_10012481831",
-    suite="WOP-RSA3072-SHA256",            # 或 WOP-RSA4096-SHA256 / WOP-SM2-SM3
+    suite="WOP-RSA2048-SHA256",            # 或 WOP-RSA4096-SHA256 / WOP-SM2-SM3
     merchant_private_key=MERCHANT_PRIV_PEM,  # 商户私钥（PEM 或 Base64 单行）
     platform_public_key=PLATFORM_PUB_PEM,    # 平台公钥（PEM 或 Base64 单行）
     gateway_base_url="https://wop.example.com",
