@@ -51,6 +51,7 @@ Csprng = Callable[[int], bytes]
 _LEVELS = ("L0", "L2")
 _DEK_PREFIX = "L2;dek="
 _HEADER_REQUEST_ID = "x-wop-request-id"
+_HEADER_SUB_MCH_ID = "x-wop-sub-mch-id"
 
 # 附录 I/I3 日志义务：出向构造点 INFO 打印最终透传头值（非敏感，豁免脱敏）
 _OUT_LOG = logging.getLogger("wop_sdk.outbound")
@@ -81,6 +82,32 @@ def resolve_request_id(raw: Optional[str]) -> Optional[str]:
     utf8_len = len(trimmed.encode("utf-8"))
     if utf8_len > 128:
         raise ConfigurationError(f"requestId UTF-8 字节长度不能超过 128（实际 {utf8_len}）")
+    return trimmed
+
+
+def resolve_sub_mch_id(raw: Optional[str]) -> Optional[str]:
+    """ISV D-13 子商户身份头 x-wop-sub-mch-id 校验（构造即拒，configuration 类）。
+
+    1. trim 前按**原值**逐字符扫描可打印 ASCII（0x20..0x7E）——控制字符（CR/LF/NUL/DEL 等）
+       防头注入，非 ASCII 在 HTTP 头编码下不可靠；
+    2. trim（G2 TrimAll 同集）后为空 → 视为未设置（返回 None，头缺席 = 应用自身身份，AC-20）；
+    3. trim 后含内部空格 → 拒（网关 canonical 的 trimall 会折叠内部空白，而身份查询只做
+       trim，内部空白破坏签名与身份一一对应）；
+    4. trim 后长度 > 128 字符 → 拒（ASCII 下字符数 = 字节数）。
+    返回 trim 后上行值；None = 未设置。
+    """
+    if raw is None:
+        return None
+    for ch in raw:
+        if ord(ch) < 0x20 or ord(ch) > 0x7E:
+            raise ConfigurationError(f"subMchId 须为可打印 ASCII（防头注入/签名歧义）: {ord(ch)}")
+    trimmed = raw.strip(_TRIM_CHARS)
+    if not trimmed:
+        return None
+    if " " in trimmed:
+        raise ConfigurationError("subMchId 不能包含内部空白")
+    if len(trimmed) > 128:
+        raise ConfigurationError(f"subMchId 长度不能超过 128（实际 {len(trimmed)}）")
     return trimmed
 
 
@@ -233,6 +260,7 @@ class WopClient:
         timestamp_ms: Optional[int] = None,
         nonce: Optional[str] = None,
         request_id: Optional[str] = None,
+        sub_mch_id: Optional[str] = None,
     ) -> RequestDraft:
         """构造请求（F9）：协议头组装 → L2 可选封装 → canonicalRequest → 签名。
 
@@ -244,6 +272,10 @@ class WopClient:
         （头恒存在），显式传值 trim 后原值上行，控制字符（trim 前扫描）与超长
         （trim 后 UTF-8 字节 > 128）构造即拒。extra_headers 携带该头等价
         request_id 参数（同解析链、恒不入签）；双来源同传构造即拒（configuration）。
+        sub_mch_id 为 ISV 子商户身份（D-13，值 = 子商户 plf_co_id）：签名前写入
+        x-wop-sub-mch-id 并自动纳入 signedHeaders；未传/空白 = 应用自身身份（头缺席，
+        与旧版逐字节一致，AC-20）。须为可打印 ASCII、无内部空白、trim 后 ≤128 字符，
+        违规构造即拒。extra_headers 携带该头等价 sub_mch_id 参数，双来源同传即拒。
         """
         if level not in _LEVELS:
             raise ConfigurationError("level 必须为 L0 或 L2，实际 %r" % level)
@@ -265,6 +297,22 @@ class WopClient:
         resolved_request_id = resolve_request_id(
             request_id if request_id is not None else header_request_id
         )
+        # ISV D-13：subMchId 同解析链（extra_headers 等价参数；双来源同传 = 歧义即拒）
+        header_sub_mch_id = next(
+            (
+                str(value)
+                for name, value in (extra_headers or {}).items()
+                if name.strip().lower() == _HEADER_SUB_MCH_ID
+            ),
+            None,
+        )
+        if header_sub_mch_id is not None and sub_mch_id is not None:
+            raise ConfigurationError(
+                "sub_mch_id 参数与 extra_headers['x-wop-sub-mch-id'] 同时显式提供，请仅保留一处"
+            )
+        resolved_sub_mch_id = resolve_sub_mch_id(
+            sub_mch_id if sub_mch_id is not None else header_sub_mch_id
+        )
         safe_method = method.strip().upper()
         # spec:interop-v1 随机流消费顺序：nonce 池最前，先于 seal_l2 的 CEK/IV
         if not nonce:
@@ -283,6 +331,9 @@ class WopClient:
             "x-wop-timestamp": str(_now_ms() if timestamp_ms is None else int(timestamp_ms)),
             "x-wop-nonce": nonce,
         }
+        # ISV D-13：签名前写入，signedHeaders 自动包含；缺席时头集合与旧行为完全一致
+        if resolved_sub_mch_id is not None:
+            headers[_HEADER_SUB_MCH_ID] = resolved_sub_mch_id
         if wire is not None:
             # D2：有 body 必产 digest；I1：digest 必入 signedHeaders（下方签名集合即全部头）
             headers["x-wop-content-digest"] = build_digest_header(self._suite, wire)
@@ -292,9 +343,9 @@ class WopClient:
         app_headers: Dict[str, str] = {}
         for name, value in (extra_headers or {}).items():
             low = name.strip().lower()
-            if low == _HEADER_REQUEST_ID:
-                # 恒不入签（附录 I）：值已在解析链消费；若并入 headers 会被签名后
-                # 覆盖 → 签名集合含旧值、线上是新值，网关验签必败且 SDK 零报错
+            if low in (_HEADER_REQUEST_ID, _HEADER_SUB_MCH_ID):
+                # request_id 恒不入签（附录 I）；sub_mch_id 已在签名前由解析链写入。
+                # 若此处再并入会覆盖已验证值 → 签名/身份不一致
                 continue
             if low.startswith("x-wop-"):
                 headers[low] = str(value).strip()
@@ -364,6 +415,7 @@ class WopClient:
         *,
         level: str = "L0",
         request_id: Optional[str] = None,
+        sub_mch_id: Optional[str] = None,
     ) -> VerifyResult:
         """一站式：签名 → 发送 → 非 2xx 拦截 → 验签解密（§2 execute 语义）。"""
         if self._transport is None or self._sdk_config is None:
@@ -376,6 +428,7 @@ class WopClient:
             level=level,
             expired_seconds=self._sdk_config.expired_seconds,
             request_id=request_id,
+            sub_mch_id=sub_mch_id,
         )
         from .transports import send_draft
 

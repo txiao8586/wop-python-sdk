@@ -50,6 +50,24 @@ else:
     print(result.reason)  # 验签/解密失败对外模糊（I7），格式/完整性/一致性类明确
 ```
 
+## ISV 子商户身份（ISV D-13）
+
+代子商户调用业务 API 时，按请求传 `sub_mch_id`（值 = 子商户 `plf_co_id`）：
+
+```python
+draft = client.build_request("POST", "/gateway/order/create", body, level="L0",
+                             sub_mch_id="PLF-SUB-001")
+# 一站式调用：
+result = client.execute("POST", "/gateway/order/create", body, level="L0",
+                        sub_mch_id="PLF-SUB-001")
+```
+
+SDK 在签名前写入 `x-wop-sub-mch-id`，并自动纳入 `x-wop-sign` 的 signedHeaders。
+首尾空白 trim 后发送；仅接受可打印 ASCII（0x20–0x7E）、无内部空白、≤128 字符，
+违规抛 `ConfigurationError`。不传或纯空白 = 应用自身身份，头缺席，请求头集合与签名
+与旧版逐字节一致（AC-20）。`extra_headers` 携带该头等价于参数；双来源同传构造即拒。
+该头仅在网关子商户灰度放行且应用为 ISV 应用（`app_type=20`）时生效。
+
 ## 密钥准备
 
 密钥入参为字符串（PEM 或 Base64 单行），SDK 内部解析（D12 分发契约）：

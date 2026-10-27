@@ -52,6 +52,28 @@ else:
                           # integrity / consistency errors are explicit
 ```
 
+## ISV Sub-Merchant Identity (ISV D-13)
+
+When calling business APIs on behalf of a sub-merchant, pass `sub_mch_id` per request
+(value = the sub-merchant's `plf_co_id`):
+
+```python
+draft = client.build_request("POST", "/gateway/order/create", body, level="L0",
+                             sub_mch_id="PLF-SUB-001")
+# one-shot:
+result = client.execute("POST", "/gateway/order/create", body, level="L0",
+                        sub_mch_id="PLF-SUB-001")
+```
+
+The SDK writes `x-wop-sub-mch-id` before signing and includes it in the `x-wop-sign`
+signedHeaders. Leading/trailing whitespace is trimmed; the value must be printable ASCII
+(0x20–0x7E), contain no internal whitespace, and be at most 128 characters — violations
+raise `ConfigurationError`. Omitting it (or passing blank) keeps the app's own identity:
+the header is absent and the header set/signature are byte-identical to earlier versions
+(AC-20). Passing the header via `extra_headers` is equivalent to the parameter; supplying
+both is rejected. The header takes effect only when the gateway sub-merchant gray gate is
+open for the app and the app is an ISV app (`app_type=20`).
+
 ## Key Preparation
 
 Keys are passed as strings (PEM or single-line Base64) and parsed inside the SDK
