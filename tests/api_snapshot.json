@@ -1750,10 +1750,10 @@
                 "parsed": [
                   {
                     "kind": "text",
-                    "value": "\u6784\u9020\u8bf7\u6c42\uff08F9\uff09\uff1a\u534f\u8bae\u5934\u7ec4\u88c5 \u2192 L2 \u53ef\u9009\u5c01\u88c5 \u2192 canonicalRequest \u2192 \u7b7e\u540d\u3002\n\ntimestamp_ms / nonce \u4e3a\u786e\u5b9a\u6027\u94a9\u5b50\uff08\u91cd\u653e/\u8054\u8c03\u7528\uff1b\u955c\u50cf Go WithTimestamp/\nWithNonce\uff09\u3002\u968f\u673a\u6d41\u6d88\u8d39\u987a\u5e8f\u5408\u540c\uff08wop-specs/interop/v1\uff09\uff1a\n[16B nonce \u6c60][CEK][12B IV][k\u2026]\u2014\u2014nonce \u6ce8\u5165\u65f6\u8df3\u8fc7 nonce \u6c60\u6bb5\u3002\nrequest_id \u4e3a\u5546\u6237\u8bf7\u6c42\u6807\u8bc6\uff08\u9644\u5f55 I\uff1ax-wop-request-id \u900f\u4f20\u5934\uff0c\u6052\u4e0d\u5165\u7b7e\uff1b\n\u987b\u4e3a\u4e0d\u542b\u4e2a\u4eba\u6570\u636e\u7684\u4e0d\u900f\u660e\u5173\u8054\u6807\u8bc6\uff09\uff1b\u672a\u4f20/\u7a7a\u767d \u2192 \u7f3a\u7701\u751f\u6210 UUID \u53bb\u8fde\u5b57\u7b26\n\uff08\u5934\u6052\u5b58\u5728\uff09\uff0c\u663e\u5f0f\u4f20\u503c trim \u540e\u539f\u503c\u4e0a\u884c\uff0c\u63a7\u5236\u5b57\u7b26\uff08trim \u524d\u626b\u63cf\uff09\u4e0e\u8d85\u957f\n\uff08trim \u540e UTF-8 \u5b57\u8282 > 128\uff09\u6784\u9020\u5373\u62d2\u3002extra_headers \u643a\u5e26\u8be5\u5934\u7b49\u4ef7\nrequest_id \u53c2\u6570\uff08\u540c\u89e3\u6790\u94fe\u3001\u6052\u4e0d\u5165\u7b7e\uff09\uff1b\u53cc\u6765\u6e90\u540c\u4f20\u6784\u9020\u5373\u62d2\uff08configuration\uff09\u3002"
+                    "value": "\u6784\u9020\u8bf7\u6c42\uff08F9\uff09\uff1a\u534f\u8bae\u5934\u7ec4\u88c5 \u2192 L2 \u53ef\u9009\u5c01\u88c5 \u2192 canonicalRequest \u2192 \u7b7e\u540d\u3002\n\ntimestamp_ms / nonce \u4e3a\u786e\u5b9a\u6027\u94a9\u5b50\uff08\u91cd\u653e/\u8054\u8c03\u7528\uff1b\u955c\u50cf Go WithTimestamp/\nWithNonce\uff09\u3002\u968f\u673a\u6d41\u6d88\u8d39\u987a\u5e8f\u5408\u540c\uff08wop-specs/interop/v1\uff09\uff1a\n[16B nonce \u6c60][CEK][12B IV][k\u2026]\u2014\u2014nonce \u6ce8\u5165\u65f6\u8df3\u8fc7 nonce \u6c60\u6bb5\u3002\nrequest_id \u4e3a\u5546\u6237\u8bf7\u6c42\u6807\u8bc6\uff08\u9644\u5f55 I\uff1ax-wop-request-id \u900f\u4f20\u5934\uff0c\u6052\u4e0d\u5165\u7b7e\uff1b\n\u987b\u4e3a\u4e0d\u542b\u4e2a\u4eba\u6570\u636e\u7684\u4e0d\u900f\u660e\u5173\u8054\u6807\u8bc6\uff09\uff1b\u672a\u4f20/\u7a7a\u767d \u2192 \u7f3a\u7701\u751f\u6210 UUID \u53bb\u8fde\u5b57\u7b26\n\uff08\u5934\u6052\u5b58\u5728\uff09\uff0c\u663e\u5f0f\u4f20\u503c trim \u540e\u539f\u503c\u4e0a\u884c\uff0c\u63a7\u5236\u5b57\u7b26\uff08trim \u524d\u626b\u63cf\uff09\u4e0e\u8d85\u957f\n\uff08trim \u540e UTF-8 \u5b57\u8282 > 128\uff09\u6784\u9020\u5373\u62d2\u3002extra_headers \u643a\u5e26\u8be5\u5934\u7b49\u4ef7\nrequest_id \u53c2\u6570\uff08\u540c\u89e3\u6790\u94fe\u3001\u6052\u4e0d\u5165\u7b7e\uff09\uff1b\u53cc\u6765\u6e90\u540c\u4f20\u6784\u9020\u5373\u62d2\uff08configuration\uff09\u3002\nsub_mch_id \u4e3a ISV \u5b50\u5546\u6237\u8eab\u4efd\uff08D-13\uff0c\u503c = \u5b50\u5546\u6237 plf_co_id\uff09\uff1a\u7b7e\u540d\u524d\u5199\u5165\nx-wop-sub-mch-id \u5e76\u81ea\u52a8\u7eb3\u5165 signedHeaders\uff1b\u672a\u4f20/\u7a7a\u767d = \u5e94\u7528\u81ea\u8eab\u8eab\u4efd\uff08\u5934\u7f3a\u5e2d\uff0c\n\u4e0e\u65e7\u7248\u9010\u5b57\u8282\u4e00\u81f4\uff0cAC-20\uff09\u3002\u987b\u4e3a\u53ef\u6253\u5370 ASCII\u3001\u65e0\u5185\u90e8\u7a7a\u767d\u3001trim \u540e \u2264128 \u5b57\u7b26\uff0c\n\u8fdd\u89c4\u6784\u9020\u5373\u62d2\u3002extra_headers \u643a\u5e26\u8be5\u5934\u7b49\u4ef7 sub_mch_id \u53c2\u6570\uff0c\u53cc\u6765\u6e90\u540c\u4f20\u5373\u62d2\u3002"
                   }
                 ],
-                "value": "\u6784\u9020\u8bf7\u6c42\uff08F9\uff09\uff1a\u534f\u8bae\u5934\u7ec4\u88c5 \u2192 L2 \u53ef\u9009\u5c01\u88c5 \u2192 canonicalRequest \u2192 \u7b7e\u540d\u3002\n\ntimestamp_ms / nonce \u4e3a\u786e\u5b9a\u6027\u94a9\u5b50\uff08\u91cd\u653e/\u8054\u8c03\u7528\uff1b\u955c\u50cf Go WithTimestamp/\nWithNonce\uff09\u3002\u968f\u673a\u6d41\u6d88\u8d39\u987a\u5e8f\u5408\u540c\uff08wop-specs/interop/v1\uff09\uff1a\n[16B nonce \u6c60][CEK][12B IV][k\u2026]\u2014\u2014nonce \u6ce8\u5165\u65f6\u8df3\u8fc7 nonce \u6c60\u6bb5\u3002\nrequest_id \u4e3a\u5546\u6237\u8bf7\u6c42\u6807\u8bc6\uff08\u9644\u5f55 I\uff1ax-wop-request-id \u900f\u4f20\u5934\uff0c\u6052\u4e0d\u5165\u7b7e\uff1b\n\u987b\u4e3a\u4e0d\u542b\u4e2a\u4eba\u6570\u636e\u7684\u4e0d\u900f\u660e\u5173\u8054\u6807\u8bc6\uff09\uff1b\u672a\u4f20/\u7a7a\u767d \u2192 \u7f3a\u7701\u751f\u6210 UUID \u53bb\u8fde\u5b57\u7b26\n\uff08\u5934\u6052\u5b58\u5728\uff09\uff0c\u663e\u5f0f\u4f20\u503c trim \u540e\u539f\u503c\u4e0a\u884c\uff0c\u63a7\u5236\u5b57\u7b26\uff08trim \u524d\u626b\u63cf\uff09\u4e0e\u8d85\u957f\n\uff08trim \u540e UTF-8 \u5b57\u8282 > 128\uff09\u6784\u9020\u5373\u62d2\u3002extra_headers \u643a\u5e26\u8be5\u5934\u7b49\u4ef7\nrequest_id \u53c2\u6570\uff08\u540c\u89e3\u6790\u94fe\u3001\u6052\u4e0d\u5165\u7b7e\uff09\uff1b\u53cc\u6765\u6e90\u540c\u4f20\u6784\u9020\u5373\u62d2\uff08configuration\uff09\u3002"
+                "value": "\u6784\u9020\u8bf7\u6c42\uff08F9\uff09\uff1a\u534f\u8bae\u5934\u7ec4\u88c5 \u2192 L2 \u53ef\u9009\u5c01\u88c5 \u2192 canonicalRequest \u2192 \u7b7e\u540d\u3002\n\ntimestamp_ms / nonce \u4e3a\u786e\u5b9a\u6027\u94a9\u5b50\uff08\u91cd\u653e/\u8054\u8c03\u7528\uff1b\u955c\u50cf Go WithTimestamp/\nWithNonce\uff09\u3002\u968f\u673a\u6d41\u6d88\u8d39\u987a\u5e8f\u5408\u540c\uff08wop-specs/interop/v1\uff09\uff1a\n[16B nonce \u6c60][CEK][12B IV][k\u2026]\u2014\u2014nonce \u6ce8\u5165\u65f6\u8df3\u8fc7 nonce \u6c60\u6bb5\u3002\nrequest_id \u4e3a\u5546\u6237\u8bf7\u6c42\u6807\u8bc6\uff08\u9644\u5f55 I\uff1ax-wop-request-id \u900f\u4f20\u5934\uff0c\u6052\u4e0d\u5165\u7b7e\uff1b\n\u987b\u4e3a\u4e0d\u542b\u4e2a\u4eba\u6570\u636e\u7684\u4e0d\u900f\u660e\u5173\u8054\u6807\u8bc6\uff09\uff1b\u672a\u4f20/\u7a7a\u767d \u2192 \u7f3a\u7701\u751f\u6210 UUID \u53bb\u8fde\u5b57\u7b26\n\uff08\u5934\u6052\u5b58\u5728\uff09\uff0c\u663e\u5f0f\u4f20\u503c trim \u540e\u539f\u503c\u4e0a\u884c\uff0c\u63a7\u5236\u5b57\u7b26\uff08trim \u524d\u626b\u63cf\uff09\u4e0e\u8d85\u957f\n\uff08trim \u540e UTF-8 \u5b57\u8282 > 128\uff09\u6784\u9020\u5373\u62d2\u3002extra_headers \u643a\u5e26\u8be5\u5934\u7b49\u4ef7\nrequest_id \u53c2\u6570\uff08\u540c\u89e3\u6790\u94fe\u3001\u6052\u4e0d\u5165\u7b7e\uff09\uff1b\u53cc\u6765\u6e90\u540c\u4f20\u6784\u9020\u5373\u62d2\uff08configuration\uff09\u3002\nsub_mch_id \u4e3a ISV \u5b50\u5546\u6237\u8eab\u4efd\uff08D-13\uff0c\u503c = \u5b50\u5546\u6237 plf_co_id\uff09\uff1a\u7b7e\u540d\u524d\u5199\u5165\nx-wop-sub-mch-id \u5e76\u81ea\u52a8\u7eb3\u5165 signedHeaders\uff1b\u672a\u4f20/\u7a7a\u767d = \u5e94\u7528\u81ea\u8eab\u8eab\u4efd\uff08\u5934\u7f3a\u5e2d\uff0c\n\u4e0e\u65e7\u7248\u9010\u5b57\u8282\u4e00\u81f4\uff0cAC-20\uff09\u3002\u987b\u4e3a\u53ef\u6253\u5370 ASCII\u3001\u65e0\u5185\u90e8\u7a7a\u767d\u3001trim \u540e \u2264128 \u5b57\u7b26\uff0c\n\u8fdd\u89c4\u6784\u9020\u5373\u62d2\u3002extra_headers \u643a\u5e26\u8be5\u5934\u7b49\u4ef7 sub_mch_id \u53c2\u6570\uff0c\u53cc\u6765\u6e90\u540c\u4f20\u5373\u62d2\u3002"
               },
               "is_class_private": false,
               "is_deprecated": false,
@@ -1930,6 +1930,24 @@
                   "default": "None",
                   "kind": "keyword-only",
                   "name": "request_id"
+                },
+                {
+                  "annotation": {
+                    "cls": "ExprSubscript",
+                    "left": {
+                      "cls": "ExprName",
+                      "member": "build_request",
+                      "name": "Optional"
+                    },
+                    "slice": {
+                      "cls": "ExprName",
+                      "member": "build_request",
+                      "name": "str"
+                    }
+                  },
+                  "default": "None",
+                  "kind": "keyword-only",
+                  "name": "sub_mch_id"
                 }
               ],
               "path": "wop_sdk.client.WopClient.build_request",
@@ -2107,6 +2125,24 @@
                   "default": "None",
                   "kind": "keyword-only",
                   "name": "request_id"
+                },
+                {
+                  "annotation": {
+                    "cls": "ExprSubscript",
+                    "left": {
+                      "cls": "ExprName",
+                      "member": "execute",
+                      "name": "Optional"
+                    },
+                    "slice": {
+                      "cls": "ExprName",
+                      "member": "execute",
+                      "name": "str"
+                    }
+                  },
+                  "default": "None",
+                  "kind": "keyword-only",
+                  "name": "sub_mch_id"
                 }
               ],
               "path": "wop_sdk.client.WopClient.execute",
@@ -3173,6 +3209,64 @@
             "slice": {
               "cls": "ExprName",
               "member": "resolve_request_id",
+              "name": "str"
+            }
+          },
+          "runtime": true
+        },
+        "resolve_sub_mch_id": {
+          "analysis": "static",
+          "decorators": [],
+          "docstring": {
+            "parsed": [
+              {
+                "kind": "text",
+                "value": "ISV D-13 \u5b50\u5546\u6237\u8eab\u4efd\u5934 x-wop-sub-mch-id \u6821\u9a8c\uff08\u6784\u9020\u5373\u62d2\uff0cconfiguration \u7c7b\uff09\u3002\n\n1. trim \u524d\u6309**\u539f\u503c**\u9010\u5b57\u7b26\u626b\u63cf\u53ef\u6253\u5370 ASCII\uff080x20..0x7E\uff09\u2014\u2014\u63a7\u5236\u5b57\u7b26\uff08CR/LF/NUL/DEL \u7b49\uff09\n   \u9632\u5934\u6ce8\u5165\uff0c\u975e ASCII \u5728 HTTP \u5934\u7f16\u7801\u4e0b\u4e0d\u53ef\u9760\uff1b\n2. trim\uff08G2 TrimAll \u540c\u96c6\uff09\u540e\u4e3a\u7a7a \u2192 \u89c6\u4e3a\u672a\u8bbe\u7f6e\uff08\u8fd4\u56de None\uff0c\u5934\u7f3a\u5e2d = \u5e94\u7528\u81ea\u8eab\u8eab\u4efd\uff0cAC-20\uff09\uff1b\n3. trim \u540e\u542b\u5185\u90e8\u7a7a\u683c \u2192 \u62d2\uff08\u7f51\u5173 canonical \u7684 trimall \u4f1a\u6298\u53e0\u5185\u90e8\u7a7a\u767d\uff0c\u800c\u8eab\u4efd\u67e5\u8be2\u53ea\u505a\n   trim\uff0c\u5185\u90e8\u7a7a\u767d\u7834\u574f\u7b7e\u540d\u4e0e\u8eab\u4efd\u4e00\u4e00\u5bf9\u5e94\uff09\uff1b\n4. trim \u540e\u957f\u5ea6 > 128 \u5b57\u7b26 \u2192 \u62d2\uff08ASCII \u4e0b\u5b57\u7b26\u6570 = \u5b57\u8282\u6570\uff09\u3002\n\u8fd4\u56de trim \u540e\u4e0a\u884c\u503c\uff1bNone = \u672a\u8bbe\u7f6e\u3002"
+              }
+            ],
+            "value": "ISV D-13 \u5b50\u5546\u6237\u8eab\u4efd\u5934 x-wop-sub-mch-id \u6821\u9a8c\uff08\u6784\u9020\u5373\u62d2\uff0cconfiguration \u7c7b\uff09\u3002\n\n1. trim \u524d\u6309**\u539f\u503c**\u9010\u5b57\u7b26\u626b\u63cf\u53ef\u6253\u5370 ASCII\uff080x20..0x7E\uff09\u2014\u2014\u63a7\u5236\u5b57\u7b26\uff08CR/LF/NUL/DEL \u7b49\uff09\n   \u9632\u5934\u6ce8\u5165\uff0c\u975e ASCII \u5728 HTTP \u5934\u7f16\u7801\u4e0b\u4e0d\u53ef\u9760\uff1b\n2. trim\uff08G2 TrimAll \u540c\u96c6\uff09\u540e\u4e3a\u7a7a \u2192 \u89c6\u4e3a\u672a\u8bbe\u7f6e\uff08\u8fd4\u56de None\uff0c\u5934\u7f3a\u5e2d = \u5e94\u7528\u81ea\u8eab\u8eab\u4efd\uff0cAC-20\uff09\uff1b\n3. trim \u540e\u542b\u5185\u90e8\u7a7a\u683c \u2192 \u62d2\uff08\u7f51\u5173 canonical \u7684 trimall \u4f1a\u6298\u53e0\u5185\u90e8\u7a7a\u767d\uff0c\u800c\u8eab\u4efd\u67e5\u8be2\u53ea\u505a\n   trim\uff0c\u5185\u90e8\u7a7a\u767d\u7834\u574f\u7b7e\u540d\u4e0e\u8eab\u4efd\u4e00\u4e00\u5bf9\u5e94\uff09\uff1b\n4. trim \u540e\u957f\u5ea6 > 128 \u5b57\u7b26 \u2192 \u62d2\uff08ASCII \u4e0b\u5b57\u7b26\u6570 = \u5b57\u8282\u6570\uff09\u3002\n\u8fd4\u56de trim \u540e\u4e0a\u884c\u503c\uff1bNone = \u672a\u8bbe\u7f6e\u3002"
+          },
+          "is_class_private": false,
+          "is_deprecated": false,
+          "is_exported": false,
+          "is_imported": false,
+          "is_private": false,
+          "is_public": true,
+          "is_special": false,
+          "is_wildcard_exposed": true,
+          "kind": "function",
+          "name": "resolve_sub_mch_id",
+          "parameters": [
+            {
+              "annotation": {
+                "cls": "ExprSubscript",
+                "left": {
+                  "cls": "ExprName",
+                  "member": "resolve_sub_mch_id",
+                  "name": "Optional"
+                },
+                "slice": {
+                  "cls": "ExprName",
+                  "member": "resolve_sub_mch_id",
+                  "name": "str"
+                }
+              },
+              "default": null,
+              "kind": "positional or keyword",
+              "name": "raw"
+            }
+          ],
+          "path": "wop_sdk.client.resolve_sub_mch_id",
+          "returns": {
+            "cls": "ExprSubscript",
+            "left": {
+              "cls": "ExprName",
+              "member": "resolve_sub_mch_id",
+              "name": "Optional"
+            },
+            "slice": {
+              "cls": "ExprName",
+              "member": "resolve_sub_mch_id",
               "name": "str"
             }
           },

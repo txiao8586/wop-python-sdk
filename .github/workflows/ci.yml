@@ -35,8 +35,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           # pytest/pytest-bdd 属测试工具链而非运行时依赖，CI 显式安装；
+          # 上限锁定：pytest 9.2 移除 FixtureManager._arg2fixturedefs，pytest-bdd（≤9.0）尚未跟进，
+          # 不限版即全量 BDD 用例 AttributeError（与业务代码无关）；8.4.2/8.1.0 为最近一次全绿组合
           # coverage[toml]：py<3.11 需 tomli 才能读 pyproject.toml 的 coverage 配置
-          pip install -e '.[httpx,requests]' pytest pytest-bdd pytest-cov 'coverage[toml]'
+          pip install -e '.[httpx,requests]' 'pytest==8.4.2' 'pytest-bdd==8.1.0' pytest-cov 'coverage[toml]'
       - name: Test with coverage gate (line+branch ≥ 98%, vector conformance must pass)
         run: python -m pytest --cov=wop_sdk --cov-branch --cov-fail-under=98
       - name: Coverage detail (line & branch)
