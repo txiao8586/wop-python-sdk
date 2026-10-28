@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 """ISV D-13：子商户身份头 x-wop-sub-mch-id 入签与 AC-20 零回归。"""
+import json
+
 import pytest
 
 import wop_sdk.client as client_mod
 from wop_sdk.canonical import build_canonical, canonical_headers
 from wop_sdk.client import WopClient, WopConfig
 from wop_sdk.encoding import b64url_decode
+from wop_sdk.config._parser import parse_config_json
 from wop_sdk.errors import ConfigurationError
 from wop_sdk.keys import load_rsa_public_key
 from wop_sdk.signature import verify
+from helpers import _valid_config_dict
 
 RSA_REQ = "WOP-RSA3072-SHA256"
 PATH = "/gateway/order.create"
@@ -127,3 +131,63 @@ class TestSubMchIdValidation:
     def test_printable_ascii_boundary(self, rsa_client):
         draft = rsa_client.build_request("GET", PATH, sub_mch_id="!~")
         assert draft.headers["x-wop-sub-mch-id"] == "!~"
+
+
+class TestSubMchIdSources:
+    """附录 J/J2 + J3：来源消歧与非 str 输入不得被 str() 归一。"""
+
+    def test_blank_param_with_real_header_uses_header(self, rsa_client):
+        draft = rsa_client.build_request(
+            "GET", PATH, sub_mch_id="   ",
+            extra_headers={"x-wop-sub-mch-id": "PLF-1"},
+        )
+        assert draft.headers["x-wop-sub-mch-id"] == "PLF-1"
+
+    def test_extra_headers_none_means_unset(self, rsa_client):
+        draft = rsa_client.build_request("GET", PATH, extra_headers={"x-wop-sub-mch-id": None})
+        assert "x-wop-sub-mch-id" not in draft.headers
+
+    @pytest.mark.parametrize("bad", [123, 12.5, b"PLF-1"])
+    def test_extra_headers_non_string_rejected(self, rsa_client, bad):
+        with pytest.raises(ConfigurationError, match="须为字符串"):
+            rsa_client.build_request("GET", PATH, extra_headers={"x-wop-sub-mch-id": bad})
+
+    @pytest.mark.parametrize("bad", [123, b"PLF-1"])
+    def test_param_non_string_rejected(self, rsa_client, bad):
+        with pytest.raises(ConfigurationError, match="须为字符串"):
+            rsa_client.build_request("GET", PATH, sub_mch_id=bad)
+
+    def test_extra_headers_blank_behaves_as_before(self, rsa_client, monkeypatch):
+        monkeypatch.setattr(client_mod, "request_id_generator", lambda: "fixed" + "0" * 27)
+        common = dict(timestamp_ms=1774340000000, nonce="n1")
+        baseline = rsa_client.build_request("POST", PATH, b'{"k":1}', **common)
+        draft = rsa_client.build_request(
+            "POST", PATH, b'{"k":1}',
+            extra_headers={"x-wop-sub-mch-id": "   "}, **common,
+        )
+        assert "x-wop-sub-mch-id" not in draft.headers
+        assert draft.headers == baseline.headers
+
+
+class TestSubMchIdExecute:
+    """附录 J/J3：一站式 execute 与分步 buildRequest 同等生效。"""
+
+    def test_execute_carries_signed_header(self, vec_keys):
+        cfg = parse_config_json(json.dumps(_valid_config_dict(vec_keys)))
+        client = WopClient.from_config(cfg, csprng=lambda n: b"\x5a" * n)
+        seen = {}
+
+        class Stop(Exception):
+            pass
+
+        class RecordingTransport:
+            def send(self, method, url, headers, body):
+                seen["headers"] = dict(headers)
+                raise Stop
+
+        client._transport = RecordingTransport()
+        with pytest.raises(Stop):
+            client.execute("POST", PATH, b'{"k":1}', sub_mch_id="PLF-SUB-001")
+        assert seen["headers"]["x-wop-sub-mch-id"] == "PLF-SUB-001"
+        signed_names = seen["headers"]["x-wop-sign"].split(" ", 1)[1].split("/")[2].split(";")
+        assert "x-wop-sub-mch-id" in signed_names

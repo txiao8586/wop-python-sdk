@@ -98,6 +98,11 @@ def resolve_sub_mch_id(raw: Optional[str]) -> Optional[str]:
     """
     if raw is None:
         return None
+    if not isinstance(raw, str):
+        # J2 构造即拒：非 str（如数值型 plf_co_id）不得被 str() 归一后静默入签
+        raise ConfigurationError(
+            "subMchId 须为字符串（子商户 plf_co_id），实际 %s" % type(raw).__name__
+        )
     for ch in raw:
         if ord(ch) < 0x20 or ord(ch) > 0x7E:
             raise ConfigurationError(f"subMchId 须为可打印 ASCII（防头注入/签名歧义）: {ord(ch)}")
@@ -300,18 +305,21 @@ class WopClient:
         # ISV D-13：subMchId 同解析链（extra_headers 等价参数；双来源同传 = 歧义即拒）
         header_sub_mch_id = next(
             (
-                str(value)
+                value
                 for name, value in (extra_headers or {}).items()
                 if name.strip().lower() == _HEADER_SUB_MCH_ID
             ),
             None,
         )
-        if header_sub_mch_id is not None and sub_mch_id is not None:
+        # 两侧各按 J2 解析（trim 后空 = 未设置）：只有两侧都解析出值才构成双来源歧义
+        param_resolved = resolve_sub_mch_id(sub_mch_id)
+        header_resolved = resolve_sub_mch_id(header_sub_mch_id)
+        if param_resolved is not None and header_resolved is not None:
             raise ConfigurationError(
                 "sub_mch_id 参数与 extra_headers['x-wop-sub-mch-id'] 同时显式提供，请仅保留一处"
             )
-        resolved_sub_mch_id = resolve_sub_mch_id(
-            sub_mch_id if sub_mch_id is not None else header_sub_mch_id
+        resolved_sub_mch_id = (
+            param_resolved if param_resolved is not None else header_resolved
         )
         safe_method = method.strip().upper()
         # spec:interop-v1 随机流消费顺序：nonce 池最前，先于 seal_l2 的 CEK/IV
